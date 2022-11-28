@@ -11,8 +11,6 @@ SSLStaplingCache shmcb:/tmp/stapling_cache(128000)
     ServerAdmin {{ email }}
     ServerName {{ server_host }}
 
-    DocumentRoot /var/www/{{ server_host }}
-
     ErrorLog ${APACHE_LOG_DIR}/error.log
     CustomLog ${APACHE_LOG_DIR}/access.log combined
 
@@ -29,5 +27,15 @@ SSLStaplingCache shmcb:/tmp/stapling_cache(128000)
 
     Include /etc/letsencrypt/options-ssl-apache.conf
 
-    # TODO: Docker proxies
+    <Location /lam>
+        ProxyPass /lam "http://{{ server_host }}:4000/lam/
+        ProxyPassReverse /lam "http://{{ server_host }}:4000/lam/
+
+        Order allow, deny
+    
+        # TODO: Limit access
+    </Location>
+
+    ProxyPass / "http://{{ server_host }}:3000/
+    ProxyPassReverse / "http://{{ server_host }}:3000/
 </VirtualHost>

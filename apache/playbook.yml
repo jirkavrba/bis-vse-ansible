@@ -74,6 +74,15 @@
       args:
         creates: "/etc/letsencrypt/live/{{ server_host }}"
 
+    - name: "Enable the Apache proxy modules"
+      command: "/usr/sbin/a2enmod {{ item }}"
+      register: output
+      changed_when: output.rc != 0
+      notify: Reload Apache
+      with_items:
+        - "proxy"
+        - "proxy_http"
+
     - name: "Disable the default Apache site"
       command: /usr/sbin/a2dissite 000-default.conf
       register: output

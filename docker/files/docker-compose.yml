@@ -18,6 +18,9 @@ services:
       - LDAP_TLS_VERIFY_CLIENT=never
 
     command: "--loglevel info --copy-service"
+    ports:
+      - "389:389"
+      - "636:636"
     volumes:
       - ldap:/var/lib/ldap
       - slapd:/etc/ldap/slapd.d
@@ -40,6 +43,8 @@ services:
       - LDAP_BASE_DN=${LDAP_BASE_DN}
       - ADMIN_USER=cn=admin,${LDAP_BASE_DN}
     hostname: lam
+    ports:
+      - "4000:80"
     depends_on:
       - ldap
     volumes:

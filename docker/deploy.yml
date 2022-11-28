@@ -29,6 +29,11 @@
         dest: "/opt/app/.env"
         mode: "644"
 
+    - name: "Stop the existing docker compose cluster"
+      command:
+        cmd: "docker compose down -v"
+        chdir: "/opt/app"
+
     - name: "Deploy the docker compose cluster"
       command:
         cmd: "docker compose up -d"
