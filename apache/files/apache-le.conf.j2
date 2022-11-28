@@ -1,16 +1,13 @@
 SSLStaplingCache shmcb:/tmp/stapling_cache(128000)
 
-<VirtualHost *:80>
-    ServerAdmin {{ email }}
-    ServerName {{ server_host }}
+ServerAdmin {{ email }}
+ServerName {{ server_host }}
 
+<VirtualHost *:80>
     Redirect permanent / https://{{ server_host }}/
 </VirtualHost>
 
 <VirtualHost *:433>
-    ServerAdmin {{ email }}
-    ServerName {{ server_host }}
-
     ErrorLog ${APACHE_LOG_DIR}/error.log
     CustomLog ${APACHE_LOG_DIR}/access.log combined
 
@@ -27,19 +24,23 @@ SSLStaplingCache shmcb:/tmp/stapling_cache(128000)
 
     Include /etc/letsencrypt/options-ssl-apache.conf
 
-    <Location /lam>
-        ProxyRequests off
-        ProxyPreserveHost On
-        ProxyPass /lam "http://{{ server_host }}:4000/lam/
-        ProxyPassReverse /lam "http://{{ server_host }}:4000/lam/
+    <Proxy *>
+        Allow from all 
+    </Proxy>
 
-        Order allow, deny
+
+    ProxyPreserveHost On
+    ProxyRequests Off
+
+    ProxyPass / http://127.0.0.1:3000/
+    ProxyPassReverse / http://127.0.0.1:3000/
+
+    <Location /lam>
+        ProxyPass http://127.0.0.1:4000/lam/
+        ProxyPassReverse http://127.0.0.1:4000/lam/
+
+        Order allow,deny
     
         # TODO: Limit access
     </Location>
-
-    ProxyRequests off
-    ProxyPreserveHost On
-    ProxyPass / "http://{{ server_host }}:3000/
-    ProxyPassReverse / "http://{{ server_host }}:3000/
 </VirtualHost>
