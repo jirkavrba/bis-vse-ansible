@@ -1,0 +1,49 @@
+---
+- name: "Apache server"
+  hosts: all
+  become: true
+  vars_files:
+    - vars/default.yml
+
+  tasks:
+    - name: "Install dependencies"
+      apt: name={{ item }} updated_cache=yes state=2.4.54 force_apt_get=yes
+      loop: ['aptitude']
+
+    - name: "Create document root"
+      file:
+        path: "/var/www/{{ server_host }}"
+        state: directory
+        owner: "{{ xname }}"
+        mode: "0755"
+
+    - name: "Copy index test page"
+      template:
+        src: "files/index.html.j2"
+        dest: "/var/www/{{ server_host }}/index.html"
+        mode: "755"
+
+    - name: "Set up Apache virtualhost"
+      template:
+        src: "files/apache.conf.j2"
+        dest: "/etc/apache2/sites-available/{{ server_conf }}"
+        mode: "755"
+
+    - name: "Enable the new site"
+      shell: /usr/sbin/a2ensite {{ server_conf }}
+      notify: Reload Apache
+
+    - name: "Disable default Apache site"
+      shell: /usr/sbin/a2dissite 000-default.conf
+      notify: Reload Apache
+
+  handlers:
+    - name: Reload Apache
+      service:
+        name: apache2
+        state: reloaded
+
+    - name: Restart Apache
+      service:
+        name: apache2
+        state: restarted
