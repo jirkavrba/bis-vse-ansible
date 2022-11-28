@@ -28,6 +28,8 @@ SSLStaplingCache shmcb:/tmp/stapling_cache(128000)
     Include /etc/letsencrypt/options-ssl-apache.conf
 
     <Location /lam>
+        ProxyRequests off
+        ProxyPreserveHost On
         ProxyPass /lam "http://{{ server_host }}:4000/lam/
         ProxyPassReverse /lam "http://{{ server_host }}:4000/lam/
 
@@ -36,6 +38,8 @@ SSLStaplingCache shmcb:/tmp/stapling_cache(128000)
         # TODO: Limit access
     </Location>
 
+    ProxyRequests off
+    ProxyPreserveHost On
     ProxyPass / "http://{{ server_host }}:3000/
     ProxyPassReverse / "http://{{ server_host }}:3000/
 </VirtualHost>
