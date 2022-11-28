@@ -1,13 +1,6 @@
 <VirtualHost *:80>
     ServerAdmin {{ email }}
     ServerName {{ server_host }}
-</VirtualHost>
-
-<VirtualHost *:433>
-    ServerAdmin {{ email }}
-    ServerName {{ server_host }}
 
     DocumentRoot /var/www/{{ server_host }}
-
-    ErrorLog ${APACHE_LOG_DIR}/error.log
 </VirtualHost>
