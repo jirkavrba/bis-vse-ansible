@@ -40,7 +40,6 @@
 
     - name: "Install Docker GPG key"
       shell: |
-        set -o pipefail
         cat /tmp/docker-key.gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
         rm /tmp/docker-key.gpg
       register: output
@@ -79,3 +78,6 @@
         name: "{{ xname }}"
         groups: docker
         append: true
+
+    - name: "Reset ssh connection to apply the docker group"
+      meta: reset_connection

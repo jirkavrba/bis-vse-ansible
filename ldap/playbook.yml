@@ -25,7 +25,7 @@
 
     - name: "Set up the slapd configuration"
       template:
-        src: "files/slapd.conf.j2"
+        src: "files/slapd.j2"
         dest: "/etc/default/slapd"
         mode: "644"
         force: true

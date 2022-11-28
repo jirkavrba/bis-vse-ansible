@@ -20,9 +20,27 @@ server {
     ssl_certificate     /etc/letsencrypt/live/{{ server_host }}/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/{{ server_host }}/privkey.pem;
 
-    include /etc/ldap-account-manager/nginx.conf;
-
     location /lam {
+        index index.html;
+        alias /usr/share/ldap-account-manager;
+        autoindex off;
+
+        location ~ /lam/tmp/(.|\n)*\.(php|inc)$ {
+            deny all;
+            return 403;
+        }
+
+        location ~ /lam/(tmp/internal|sess|config|lib|help|locale) {
+            deny all;
+            return 403;
+        }
+
+        location ~ \.php$ {
+            include snippets/fastcgi-php.conf;
+            fastcgi_pass unix:/var/run/php/php7.4-fpm.sock;
+            fastcgi_param SCRIPT_FILENAME $request_filename;
+        }
+
         allow 146.102.0.0/16;
         # deny all;
     }
