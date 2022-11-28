@@ -7,9 +7,21 @@
 
   tasks:
     - name: "Install dependencies"
-      apt: name={{ item }} update_cache=yes state=latest force_apt_get=yes
-      loop: ['aptitude']
-    
+      apt:
+        name: "{{ item }}"
+        state: "latest"
+        update_cache: true
+        force_apt_get: true
+      with_items:
+        - "aptitude"
+        - "snapd"
+
+    - name: "Enable the snapd service"
+      service:
+        name: snapd
+        state: started
+        enabled: true
+
     - name: "Install Apache"
       apt: name=apache2 update_cache=yes state=latest
 
@@ -26,18 +38,52 @@
         dest: "/var/www/{{ server_host }}/index.html"
         mode: "755"
 
-    - name: "Set up an Apache virtualhost"
+    - name: "Set up the HTTP Apache virtualhost"
       template:
         src: "files/apache.conf.j2"
         dest: "/etc/apache2/sites-available/{{ server_conf }}"
         mode: "755"
 
-    - name: "Enable the new site"
-      shell: /usr/sbin/a2ensite {{ server_conf }}
-      notify: Reload Apache
+    - name: "Set up the HTTPS Apache virtualhost"
+      template:
+        src: "files/apache-le.conf.j2"
+        dest: "/etc/apache2/sites-available/{{ server_conf | replace('.conf', '-le.conf') }}"
+        mode: "755"
 
     - name: "Disable the default Apache site"
-      shell: /usr/sbin/a2dissite 000-default.conf
+      command: /usr/sbin/a2dissite 000-default.conf
+      register: output
+      changed_when: output.rc != 0
+      notify: Reload Apache
+
+    - name: "Enable the HTTP Apache virtualhost"
+      command: /usr/sbin/a2ensite {{ server_conf }}
+      register: output
+      changed_when: output.rc != 0
+      notify: Reload Apache
+
+    - name: "Install certbot"
+      community.general.snap:
+        name: certbot
+        classic: true
+
+    - name: "Request a certificate for {{ server_host }}"
+      command: "/snap/bin/certbot certonly --non-interactive --agree-tos --apache -d {{ server_host }} -m {{ email }}"
+      register: output
+      changed_when: output.rc != 0
+      args:
+        creates: "/etc/letsencrypt/live/{{ server_host }}"
+
+    - name: "Diable the HTTP Apache virtualhost"
+      command: /usr/sbin/a2dissite {{ server_conf }}
+      register: output
+      changed_when: output.rc != 0
+      notify: Reload Apache
+
+    - name: "Enable the HTTPS Apache virtualhost"
+      command: /usr/sbin/a2ensite {{ server_conf | replace('.conf', '-le.conf') }}
+      register: output
+      changed_when: output.rc != 0
       notify: Reload Apache
 
   handlers:
