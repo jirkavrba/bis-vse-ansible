@@ -36,19 +36,19 @@
       template:
         src: "files/index.html.j2"
         dest: "/var/www/{{ server_host }}/index.html"
-        mode: "755"
+        mode: "644"
 
     - name: "Set up the HTTP Apache virtualhost"
       template:
         src: "files/apache.conf.j2"
         dest: "/etc/apache2/sites-available/{{ server_conf }}"
-        mode: "755"
+        mode: "644"
 
     - name: "Set up the HTTPS Apache virtualhost"
       template:
         src: "files/apache-le.conf.j2"
         dest: "/etc/apache2/sites-available/{{ server_conf | replace('.conf', '-le.conf') }}"
-        mode: "755"
+        mode: "644"
 
     - name: "Disable the default Apache site"
       command: /usr/sbin/a2dissite 000-default.conf
@@ -73,6 +73,18 @@
       changed_when: output.rc != 0
       args:
         creates: "/etc/letsencrypt/live/{{ server_host }}"
+
+    - name: "Disable the default Apache site"
+      command: /usr/sbin/a2dissite 000-default.conf
+      register: output
+      changed_when: output.rc != 0
+      notify: Reload Apache
+
+    - name: "Disable the default Let's Encrypt Apache site"
+      command: /usr/sbin/a2dissite {{ server_conf | replace('.conf', '-le-ssl.conf') }}
+      register: output
+      changed_when: output.rc != 0
+      notify: Reload Apache
 
     - name: "Diable the HTTP Apache virtualhost"
       command: /usr/sbin/a2dissite {{ server_conf }}

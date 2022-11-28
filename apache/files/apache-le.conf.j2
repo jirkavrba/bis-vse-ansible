@@ -4,7 +4,7 @@ SSLStaplingCache shmcb:/tmp/stapling_cache(128000)
     ServerAdmin {{ email }}
     ServerName {{ server_host }}
 
-    # TODO: Redirect to https
+    Redirect permanent / https://{{ server_host }}/
 </VirtualHost>
 
 <VirtualHost *:433>
@@ -16,12 +16,16 @@ SSLStaplingCache shmcb:/tmp/stapling_cache(128000)
     ErrorLog ${APACHE_LOG_DIR}/error.log
     CustomLog ${APACHE_LOG_DIR}/access.log combined
 
+    Protocols h2 http/1.1
+
     SSLEngine on
 
     SSLCertificateFile /etc/letsencrypt/live/bis-ansible-1.vrba.dev/fullchain.pem
     SSLCertificateKeyFile /etc/letsencrypt/live/bis-ansible-1.vrba.dev/privkey.pem
 
     SSLUseStapling on
+
+    # TODO: Security headers
 
     Include /etc/letsencrypt/options-ssl-apache.conf
 </VirtualHost>
