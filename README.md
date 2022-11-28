@@ -1,3 +1,1 @@
-## Ansible configuration for the BIS course semester work
-
-
+# Ansible konfigurace pro semestrální práci z předmětu BIS
