@@ -15,3 +15,5 @@ email: "vrbj04@vse.cz"
 server_host: "bis140.vse.cz"
 server_conf: "bis140-vse-cz.conf"
 ```
+
+Následně pak už stačí jenom spustit příkaz `ansible-playbook -i ./hosts.yml -u xnam00 -K ./playbook.yml` a zadat sudo heslo

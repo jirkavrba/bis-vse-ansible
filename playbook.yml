@@ -1,0 +1,6 @@
+---
+- name: "Run all ansible playbooks"
+  hosts: all
+
+- name: "Run Apache playbook"
+  import_playbook: apache/playbook.yml
