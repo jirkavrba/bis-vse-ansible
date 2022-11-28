@@ -1,0 +1,70 @@
+---
+- name: "Nginx server"
+  hosts: all
+  become: true
+  vars_files:
+    - ../vars/default.yml
+
+  tasks:
+    - name: "Install dependencies"
+      apt:
+        name: "{{ item }}"
+        state: "latest"
+        update_cache: true
+        force_apt_get: true
+      with_items:
+        - "aptitude"
+        - "snapd"
+
+    - name: "Enable the snapd service"
+      service:
+        name: snapd
+        state: started
+        enabled: true
+
+    - name: "Install Nginx"
+      apt:
+        name: nginx
+        update_cache: true
+        state: latest
+
+    - name: "Create document root"
+      file:
+        path: "/var/www/{{ server_host }}"
+        state: directory
+        owner: "{{ xname }}"
+        mode: "0755"
+
+    - name: "Set up the http nginx configuration"
+      template:
+        src: "files/default.conf.j2"
+        dest: "/etc/nginx/default.conf"
+        mode: "644"
+        force: true
+      notify: "Restart nginx"
+
+    - name: "Install certbot"
+      community.general.snap:
+        name: certbot
+        classic: true
+
+    - name: "Request a certificate for {{ server_host }}"
+      command: "/snap/bin/certbot certonly --non-interactive --agree-tos --webroot -w /var/www/{{ server_host }} -d {{ server_host }} -m {{ email }}"
+      register: output
+      changed_when: output.rc != 0
+      args:
+        creates: "/etc/letsencrypt/live/{{ server_host }}"
+
+    - name: "Set up the https nginx configuration"
+      template:
+        src: "files/default-ssl.conf.j2"
+        dest: "/etc/nginx/default.conf"
+        mode: "644"
+        force: true
+      notify: "Restart nginx"
+
+  handlers:
+    - name: Restart Nginx
+      service:
+        name: nginx
+        state: restarted
