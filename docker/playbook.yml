@@ -1,0 +1,79 @@
+---
+- name: "Install Docker"
+  hosts: all
+  become: true
+  vars_files:
+    - ../vars/default.yml
+
+  tasks:
+    - name: "Install dependencies"
+      apt:
+        name: "{{ item }}"
+        state: present
+        update_cache: true
+      loop:
+        - apt-transport-https
+        - ca-certificates
+        - curl
+        - gnupg-agent
+
+    - name: "Check if the Docker GPG key is installed"
+      stat:
+        path: /etc/apt/keyrings/docker.gpg
+      register: docker_key
+
+    - name: "Download the Docker GPG key"
+      get_url:
+        url: https://download.docker.com/linux/debian/gpg
+        dest: /tmp/docker-key.gpg
+        mode: "644"
+      when:
+        not docker_key.stat.exists
+
+    - name: "Create apt keyrings directory"
+      file:
+        path: /etc/apt/keyrings
+        state: directory
+        mode: "0755"
+      when:
+        not docker_key.stat.exists
+
+    - name: "Install Docker GPG key"
+      shell: |
+        cat /tmp/docker-key.gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+        rm /tmp/docker-key.gpg
+      register: output
+      when:
+        not docker_key.stat.exists
+
+    - name: "Enable Docker apt repository"
+      apt_repository:
+        repo: "deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian bullseye stable"
+        state: present
+
+    - name: "Install Docker"
+      apt:
+        name: "{{ item }}"
+        state: latest
+        update_cache: true
+      loop:
+        - docker-ce
+        - docker-ce-cli
+        - containerd.io
+
+    - name: "Ensure that docker service is running"
+      service:
+        name: docker
+        state: started
+        enabled: true
+
+    - name: "Ensure that the docker group exists"
+      group:
+        name: docker
+        state: present
+
+    - name: "Add the application user to docker group"
+      user:
+        name: "{{ xname }}"
+        groups: docker
+        append: true
