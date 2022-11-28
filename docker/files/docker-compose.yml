@@ -3,6 +3,27 @@ services:
   application:
     image: gitea/gitea
     restart: always
-    hostname: application
+    network_mode: host
     ports:
       - "3000:3000"
+
+  lam:
+    image: ldapaccountmanager/lam:8.1
+    restart: always
+    environment:
+      - LAM_SKIP_PRECONFIGURE=true
+      - LAM_CONFIGURATION_DATABASE=files
+      - LAM_DISABLE_TLS_CHECK=false
+      - LAM_PASSWORD=${LAM_PASSWORD}
+      - LAM_LANG=en_US
+      - LDAP_SERVER=${LDAP_SERVER}
+      - LDAP_DOMAIN=${LDAP_DOMAIN}
+      - LDAP_BASE_DN=${LDAP_BASE_DN}
+      - ADMIN_USER=cn=admin,${LDAP_BASE_DN}
+    ports:
+      - "4000:80"
+    volumes:
+      - lamconfig:/var/lib/ldap-account-manager/config
+
+volumes:
+  lamconfig:

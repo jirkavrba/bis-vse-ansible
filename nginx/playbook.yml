@@ -22,12 +22,6 @@
         state: started
         enabled: true
 
-    - name: "Stop and disable the apache service"
-      service:
-        name: apache2
-        state: stopped
-        enabled: false
-
     - name: "Install Nginx"
       apt:
         name: nginx

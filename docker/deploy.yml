@@ -1,5 +1,5 @@
 ---
-- name: "Deploy Docker cluster with LDAP + LAM"
+- name: "Deploy Docker compose cluster"
   hosts: all
   become: true
   become_user: "{{ xname }}"

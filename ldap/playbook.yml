@@ -14,7 +14,6 @@
       with_items:
         - "slapd"
         - "ldap-utils"
-        - "ldap-account-manager"
 
     - name: "Set up the ldap configuration"
       template:
