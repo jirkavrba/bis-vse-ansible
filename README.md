@@ -4,7 +4,7 @@
 
 - Nastavení hostname v `hosts.yml`, lze zkontrolovat přes `ansible -i ./hosts.yml all --list-hosts`
 - Test připojení přes `ansible -i ./hosts.yml all -u xname00 -m ping`, kde `xname00` je jméno uživatele na serveru
-- Změna hodnot v konfiguračním souboru `vars/default.yml`
+- Změna hodnot v konfiguračním souboru `config.yml`
 
 Konfigurace může vypadat pro xname `vrbj04` a server `bis140.vse.cz` např. takto:
 

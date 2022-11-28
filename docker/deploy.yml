@@ -4,7 +4,7 @@
   become: true
   become_user: "{{ xname }}"
   vars_files:
-    - ../vars/default.yml
+    - ../config.yml
 
   tasks:
     - name: "Create the /opt/app directory"

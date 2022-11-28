@@ -1,0 +1,38 @@
+---
+- name: "LDAP server + LAM"
+  hosts: all
+  become: true
+  vars_files:
+    - ../config.yml
+
+  tasks:
+    - name: "Install LDAP packages"
+      apt:
+        name: "{{ item }}"
+        update_cache: true
+        state: latest
+      with_items:
+        - "slapd"
+        - "ldap-utils"
+        - "ldap-account-manager"
+
+    - name: "Set up the ldap configuration"
+      template:
+        src: "files/ldap.conf.j2"
+        dest: "/etc/ldap/ldap.conf"
+        mode: "644"
+        force: true
+
+    - name: "Set up the slapd configuration"
+      template:
+        src: "files/slapd.conf.j2"
+        dest: "/etc/default/slapd"
+        mode: "644"
+        force: true
+      notify: "Restart slapd"
+
+  handlers:
+    - name: Restart slapd
+      service:
+        name: slapd
+        state: restarted

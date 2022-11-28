@@ -1,0 +1,7 @@
+---
+xname: "xname00"
+email: "xname00@vse.cz"
+server_host: "bisxxx.vse.cz"
+server_conf: "bisxxx.vse.cz"
+ldap_password: "admin-ldap-password"
+lam_password: "lam-config-password"
