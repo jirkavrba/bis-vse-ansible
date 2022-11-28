@@ -5,8 +5,5 @@ server {
     server_name {{ server_host }};
     server_tokens off;
 
-    location /.well-known/acme-challenge {
-      allow all;
-      root /var/www/certbot;
-    }
+    root /var/www/{{ server_host }};
 }

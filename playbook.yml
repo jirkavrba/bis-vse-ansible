@@ -2,9 +2,6 @@
 - name: "Run all ansible playbooks"
   hosts: all
 
-# - name: "Run Apache playbook"
-#   import_playbook: apache/playbook.yml
-
 - name: "Run Nginx playbook"
   import_playbook: nginx/playbook.yml
 

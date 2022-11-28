@@ -5,6 +5,7 @@ server {
     server_name {{ server_host }};
     server_tokens off;
 
+    # Redirect http to https
     location / {
         return 301 https://$host$request_uri;
     }
@@ -16,7 +17,7 @@ server {
 
     server_name {{ server_host }};
 
-    ssl_certificate /etc/letsencrypt/live/{{ server_host }}/fullchain.pem;
+    ssl_certificate     /etc/letsencrypt/live/{{ server_host }}/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/{{ server_host }}/privkey.pem;
 
     location /lam {

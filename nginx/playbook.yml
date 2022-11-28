@@ -41,7 +41,12 @@
         dest: "/etc/nginx/conf.d/default.conf"
         mode: "644"
         force: true
-      notify: "Restart Nginx"
+
+    - name: "Start the nginx service"
+      service:
+        name: nginx
+        state: started
+        enabled: true
 
     - name: "Install certbot"
       community.general.snap:
@@ -49,7 +54,7 @@
         classic: true
 
     - name: "Request a certificate for {{ server_host }}"
-      command: "/snap/bin/certbot certonly --non-interactive --agree-tos --webroot -w /var/www/{{ server_host }} -d {{ server_host }} -m {{ email }}"
+      command: "/snap/bin/certbot certonly --non-interactive --nginx --agree-tos -w /var/www/{{ server_host }} -d {{ server_host }} -m {{ email }}"
       register: output
       changed_when: output.rc != 0
       args:
