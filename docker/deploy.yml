@@ -1,0 +1,35 @@
+---
+- name: "Deploy Docker cluster with LDAP + LAM"
+  hosts: all
+  become: true
+  become_user: "{{ xname }}"
+  vars_files:
+    - ../vars/default.yml
+
+  tasks:
+    - name: "Create the /opt/app directory"
+      become: true
+      become_user: root
+      file:
+        path: "/opt/app"
+        state: directory
+        owner: "{{ xname }}"
+        group: "{{ xname }}"
+        mode: "0755"
+
+    - name: "Copy docker-dompose to the app directory"
+      copy:
+        src: "files/docker-compose.yml"
+        dest: "/opt/app/docker-compose.yml"
+        mode: "644"
+
+    - name: "Copy .env to the app directory"
+      template:
+        src: "files/.env.j2"
+        dest: "/opt/app/.env"
+        mode: "644"
+
+    - name: "Deploy the docker compose cluster"
+      command:
+        cmd: "docker compose up -d"
+        chdir: "/opt/app"

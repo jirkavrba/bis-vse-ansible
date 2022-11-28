@@ -5,5 +5,8 @@
 - name: "Run Apache playbook"
   import_playbook: apache/playbook.yml
 
-- name: "Run Docker playbook"
-  import_playbook: docker/playbook.yml
+- name: "Run Docker installation playbook"
+  import_playbook: docker/install.yml
+
+- name: "Run Docker deployment playbook"
+  import_playbook: docker/deploy.yml
