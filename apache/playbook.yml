@@ -23,7 +23,7 @@
         dest: "/var/www/{{ server_host }}/index.html"
         mode: "755"
 
-    - name: "Set up Apache virtualhost"
+    - name: "Set up an Apache virtualhost"
       template:
         src: "files/apache.conf.j2"
         dest: "/etc/apache2/sites-available/{{ server_conf }}"
@@ -33,7 +33,7 @@
       shell: /usr/sbin/a2ensite {{ server_conf }}
       notify: Reload Apache
 
-    - name: "Disable default Apache site"
+    - name: "Disable the default Apache site"
       shell: /usr/sbin/a2dissite 000-default.conf
       notify: Reload Apache
 
