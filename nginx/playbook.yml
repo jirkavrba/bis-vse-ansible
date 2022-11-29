@@ -43,11 +43,16 @@
         mode: "644"
         force: true
 
+    - name: "Check if apache is running"
+      stat: path=/etc/init.d/apache2
+      register: apache_status
+
     - name: "Stop the apache service (if it's running)"
       service:
         name: apache2
         state: stopped
         enabled: false
+      when: apache_status.stat.exists
 
     - name: "Start the nginx service"
       service:
