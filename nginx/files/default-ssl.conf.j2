@@ -19,7 +19,15 @@ server {
 
     ssl_certificate     /etc/letsencrypt/live/{{ server_host }}/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/{{ server_host }}/privkey.pem;
+    
+    ssl_stapling on;
+    ssl_stapling_verify on;
+    ssl_trusted_certificate /etc/letsencrypt/live/{{ server_host }}/chain.pem;
 
+    ssl_protocols TLSv1.2 TLSv1.3;
+
+    add_header Strict-Transport-Security max-age=31536000;
+    
     location /lam {
         index index.html;
         alias /usr/share/ldap-account-manager;
