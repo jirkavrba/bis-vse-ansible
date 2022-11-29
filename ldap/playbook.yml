@@ -15,6 +15,16 @@
         - slapd
         - ldap-utils
         - ldap-account-manager
+      
+    - name: "Configure slapd admin password"
+      debconf:
+        name: slapd
+        question: "slapd/{{ item }}"
+        value: "{{ ldap_password }}"
+        vtype: password
+      with_items:
+        - password1
+        - password2
 
     - name: Set up the ldap configuration
       template:
