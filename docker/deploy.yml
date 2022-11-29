@@ -23,12 +23,6 @@
         dest: "/opt/app/docker-compose.yml"
         mode: "644"
 
-    - name: "Copy .env to the app directory"
-      template:
-        src: "files/.env.j2"
-        dest: "/opt/app/.env"
-        mode: "644"
-
     - name: "Deploy the docker compose cluster"
       command:
         cmd: "docker compose up -d"

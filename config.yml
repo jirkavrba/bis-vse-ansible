@@ -1,7 +1,6 @@
 ---
-xname: "xname00"
-email: "xname00@vse.cz"
-server_host: "bisxxx.vse.cz"
-server_conf: "bisxxx.vse.cz"
+xname: "vrbj04"
+email: "vrbj04@vrba.dev"
+server_host: "bis-ansible-demo.vrba.dev"
 ldap_password: "admin-ldap-password"
 lam_password: "lam-config-password"
