@@ -6,29 +6,30 @@
     - ../config.yml
 
   tasks:
-    - name: "Install LDAP packages"
+    - name: Install LDAP packages
       apt:
         name: "{{ item }}"
         update_cache: true
         state: latest
       with_items:
-        - "slapd"
-        - "ldap-utils"
+        - slapd
+        - ldap-utils
+        - ldap-account-manager
 
-    - name: "Set up the ldap configuration"
+    - name: Set up the ldap configuration
       template:
-        src: "files/ldap.conf.j2"
-        dest: "/etc/ldap/ldap.conf"
+        src: files/ldap.conf.j2
+        dest: /etc/ldap/ldap.conf
         mode: "644"
         force: true
 
-    - name: "Set up the slapd configuration"
+    - name: Set up the slapd configuration
       template:
-        src: "files/slapd.j2"
-        dest: "/etc/default/slapd"
+        src: files/slapd.j2
+        dest: /etc/default/slapd
         mode: "644"
         force: true
-      notify: "Restart slapd"
+      notify: Restart slapd
 
   handlers:
     - name: Restart slapd

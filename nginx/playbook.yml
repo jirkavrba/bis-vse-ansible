@@ -4,6 +4,7 @@
   become: true
   vars_files:
     - ../config.yml
+    - ../versions.yml
 
   tasks:
     - name: "Install dependencies"
@@ -67,6 +68,23 @@
         mode: "644"
         force: true
       notify: "Restart Nginx"
+
+    - name: "Install PHP and php-fpm"
+      apt:
+        name: "{{ item }}"
+        update_cache: true
+        state: latest
+      with_items:
+        - "php"
+        - "php{{ php_version }}-fpm"
+
+    - name: "Start the php-fpm service"
+      service:
+        name: "php{{ php_version }}-fpm"
+        state: started
+        enabled: true
+      notify: "Restart Nginx"
+
 
   handlers:
     - name: Restart Nginx

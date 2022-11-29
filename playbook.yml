@@ -2,11 +2,11 @@
 - name: "Run all ansible playbooks"
   hosts: all
 
-- name: "Run LDAP playbook"
-  import_playbook: ldap/playbook.yml
-
 - name: "Run Nginx playbook"
   import_playbook: nginx/playbook.yml
+
+- name: "Run LDAP playbook"
+  import_playbook: ldap/playbook.yml
 
 - name: "Run Docker installation playbook"
   import_playbook: docker/install.yml
