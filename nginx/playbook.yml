@@ -43,6 +43,12 @@
         mode: "644"
         force: true
 
+    - name: "Stop the apache service (if it's running)"
+      service:
+        name: apache2
+        state: stopped
+        enabled: false
+
     - name: "Start the nginx service"
       service:
         name: nginx
